@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tokenPlease Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand sidebar-brand"><img class="sidebar-brand-logo" src="cookies.png" alt="Logo">tokenPlease</div>
+        <button class="menu-btn active sidebar-menu-btn-rules" data-target="rules">Rules</button>
+        <button class="menu-btn sidebar-menu-btn-behavior" data-target="behavior">Behavior</button>
+        <button class="menu-btn sidebar-menu-btn-data" data-target="data">Import / Export</button>
+        <div class="author footer-author">by <a class="footer-author-link" href="https://smitverma.com" target="_blank"><b>Smit</b></a></div>
+      </aside>
+
+      <main class="main">
+        <section id="panel-rules" class="panel active">
+          <div class="panel-head">
+            <h1>Rules</h1>
+            <button id="add-rule-btn" class="rules-add-rule-btn" type="button">Add Rule</button>
+          </div>
+          <div id="rules-list" class="rules-list"></div>
+        </section>
+
+        <section id="panel-behavior" class="panel">
+          <h1 class="behavior-heading">Behavior</h1>
+          <div class="field-behavior">
+            <label class="field">
+              <span class="behavior-field-label">Enable extension</span>
+              <input class="behavior-checkbox" id="global-enabled" type="checkbox" checked />
+            </label>
+            <label class="field">
+              <span class="behavior-field-label">Polling interval (ms)</span>
+              <div class="number-input-group">
+                <button type="button" class="number-btn minus-btn" data-target="poll-interval" aria-label="Decrease"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                <input class="behavior-number" id="poll-interval" type="number" min="250" max="10000" step="50" />
+                <button type="button" class="number-btn plus-btn" data-target="poll-interval" aria-label="Increase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+              </div>
+            </label>
+            <label class="field">
+              <span class="behavior-field-label">Collapse overlay by default</span>
+              <input class="behavior-checkbox" id="collapse-default" type="checkbox" />
+            </label>
+            <label class="field">
+              <span class="behavior-field-label">Mask values by default</span>
+              <input class="behavior-checkbox" id="mask-default" type="checkbox" />
+            </label>
+            <label class="field">
+              <span class="behavior-field-label">Enable JWT Decode button</span>
+              <input class="behavior-checkbox" id="show-jwt" type="checkbox" />
+            </label>
+            <label class="field">
+              <span class="behavior-field-label">Preview max length</span>
+              <div class="number-input-group">
+                <button type="button" class="number-btn minus-btn" data-target="max-preview" aria-label="Decrease"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+                <input class="behavior-number" id="max-preview" type="number" min="2" max="240" step="1" />
+                <button type="button" class="number-btn plus-btn" data-target="max-preview" aria-label="Increase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <section id="panel-data" class="panel">
+          <h1>Import / Export</h1>
+          <textarea id="data-box" rows="16" spellcheck="false"></textarea>
+          <div class="actions-row">
+            <button id="export-btn" class="data-export-btn" type="button">Export JSON</button>
+            <button id="import-btn" class="data-import-btn" type="button">Import JSON</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="rule-dialog">
+      <form method="dialog" id="rule-form">
+        <h2 id="rule-dialog-title">Rule</h2>
+        <input id="rule-id" type="hidden" />
+
+        <label class="field">
+          <span class="field-label">Name</span>
+          <input id="rule-name" maxlength="30" type="text" required />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Enabled</span>
+          <input id="rule-enabled" type="checkbox" checked />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Source</span>
+          <select id="rule-source">
+            <option value="localStorage">localStorage</option>
+            <option value="sessionStorage">sessionStorage</option>
+            <option value="cookie">cookie</option>
+          </select>
+        </label>
+
+        <label class="field multiline">
+          <span class="field-label">Domains (one per line, host/url/wildcard)</span>
+          <textarea id="rule-domains" rows="5" required></textarea>
+        </label>
+
+        <label class="field multiline">
+          <span class="field-label">Key or regex pattern</span>
+          <input id="rule-key" type="text" required />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Regex mode</span>
+          <input id="rule-key-regex" type="checkbox" />
+        </label>
+
+        <div class="actions-row">
+          <button type="button" id="cancel-rule-btn">Cancel</button>
+          <button type="submit" id="save-rule-btn">Save Rule</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="shared.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

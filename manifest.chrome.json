@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "tokenPlease",
+  "version": "1.0.0",
+  "description": "Configurable token overlay for localStorage, sessionStorage, and cookies.",
+  "icons": {
+    "128": "cookies.png"
+  },
+  "permissions": [
+    "storage",
+    "cookies"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "shared.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "tokenPlease",
+    "default_popup": "popup.html",
+    "default_icon": "cookies.png"
+  }
+}
