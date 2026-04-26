@@ -432,6 +432,7 @@
     empty.className = "tp-empty";
     empty.textContent = message;
     dom.body.appendChild(empty);
+    console.log("rendering empty");
   }
 
   function shouldShowOverlayForCurrentPage(settings) {

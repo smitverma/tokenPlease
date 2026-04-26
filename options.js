@@ -88,8 +88,8 @@
     if (!state.settings.rules.length) {
       const empty = document.createElement("div");
       empty.className = "rules-empty";
-      empty.textContent = "No Rules";
-      empty.style.fontSize = "30px";
+      empty.textContent = "No Rules Added";
+      empty.style.fontSize = "16px";
       elements.rulesList.appendChild(empty);
       return;
     }
