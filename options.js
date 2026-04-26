@@ -20,6 +20,8 @@
     collapseDefault: document.getElementById("collapse-default"),
     maskDefault: document.getElementById("mask-default"),
     showJwt: document.getElementById("show-jwt"),
+    smartIdEnabled: document.getElementById("smart-id-enabled"),
+    smartIdPartial: document.getElementById("smart-id-partial"),
     maxPreview: document.getElementById("max-preview"),
     exportBtn: document.getElementById("export-btn"),
     importBtn: document.getElementById("import-btn"),
@@ -34,6 +36,7 @@
     ruleDomains: document.getElementById("rule-domains"),
     ruleKey: document.getElementById("rule-key"),
     ruleKeyRegex: document.getElementById("rule-key-regex"),
+    ruleSmartId: document.getElementById("rule-smart-id"),
     cancelRuleBtn: document.getElementById("cancel-rule-btn"),
     toast: document.getElementById("toast")
   };
@@ -67,6 +70,8 @@
     elements.collapseDefault.checked = state.settings.collapseByDefault;
     elements.maskDefault.checked = state.settings.maskByDefault;
     elements.showJwt.checked = state.settings.showJwtPreview;
+    elements.smartIdEnabled.checked = state.settings.smartIdEnabled;
+    elements.smartIdPartial.checked = state.settings.smartIdIncludePartial;
     elements.maxPreview.value = state.settings.maxPreviewLength;
   }
 
@@ -83,6 +88,7 @@
       const empty = document.createElement("div");
       empty.className = "rules-empty";
       empty.textContent = "No Rules";
+      empty.style.fontSize = "30px";
       elements.rulesList.appendChild(empty);
       return;
     }
@@ -171,6 +177,7 @@
     elements.ruleDomains.value = editMode ? rule.domains.join("\n") : "";
     elements.ruleKey.value = editMode ? rule.key : "";
     elements.ruleKeyRegex.checked = editMode ? rule.keyIsRegex : false;
+    elements.ruleSmartId.checked = editMode ? Boolean(rule.smartIdEnabled) : false;
 
     elements.dialog.showModal();
   }
@@ -189,7 +196,8 @@
       source: elements.ruleSource.value,
       domains,
       key: elements.ruleKey.value,
-      keyIsRegex: elements.ruleKeyRegex.checked
+      keyIsRegex: elements.ruleKeyRegex.checked,
+      smartIdEnabled: elements.ruleSmartId.checked
     });
 
     if (!rule.domains.length) {
@@ -214,6 +222,8 @@
       collapseByDefault: elements.collapseDefault.checked,
       maskByDefault: elements.maskDefault.checked,
       showJwtPreview: elements.showJwt.checked,
+      smartIdEnabled: elements.smartIdEnabled.checked,
+      smartIdIncludePartial: elements.smartIdPartial.checked,
       maxPreviewLength: Number(elements.maxPreview.value)
     };
   }
@@ -285,6 +295,8 @@
     elements.collapseDefault.addEventListener("change", saveBehavior);
     elements.maskDefault.addEventListener("change", saveBehavior);
     elements.showJwt.addEventListener("change", saveBehavior);
+    elements.smartIdEnabled.addEventListener("change", saveBehavior);
+    elements.smartIdPartial.addEventListener("change", saveBehavior);
     elements.maxPreview.addEventListener("change", saveBehavior);
     elements.exportBtn.addEventListener("click", exportSettings);
     elements.importBtn.addEventListener("click", importSettings);

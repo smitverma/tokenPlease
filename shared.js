@@ -1,5 +1,100 @@
 (function () {
   const STORAGE_KEY = "tokenPlease.settings.v1";
+  const POSITION_KEY = "tokenPlease.position.v1";
+
+  const COMMON_AUTH_KEYS = [
+    // Generic / Common
+    "accessToken",
+    "access_token",
+    "authToken",
+    "auth_token",
+    "authorization",
+    "bearer",
+    "bearerToken",
+    "idToken",
+    "id_token",
+    "refreshToken",
+    "refresh_token",
+    "sessionToken",
+    "session_token",
+    "token",
+    "userToken",
+    "user_token",
+    // OAuth
+    "oauth_token",
+    "oauth_access_token",
+    "oauth_refresh_token",
+    "oauth_token_secret",
+    // JWT
+    "jwt",
+    "jwtToken",
+    "jwt_token",
+    "jwt_access_token",
+    // API Keys
+    "apiKey",
+    "api_key",
+    "apiKeyId",
+    "api_key_id",
+    "apiSecret",
+    "api_secret",
+    // Session / Auth Cookies
+    "PHPSESSID",
+    "PHPSESSID",
+    "session_id",
+    "sessionid",
+    "session",
+    "sessionId",
+    "sess_id",
+    "sess",
+    // Auth Headers / Credentials
+    "Authorization",
+    "Bearer",
+    "X-Auth-Token",
+    "X-Access-Token",
+    "X-Api-Key",
+    "X-Token",
+    // Next.js
+    "next-auth.session-token",
+    "next-auth.callback-url",
+    "next-auth.csrf-token",
+    "__Secure-next-auth.session-token",
+    "__Host-next-auth.session-token",
+    // Supabase
+    "sb-access-token",
+    "sb-refresh-token",
+    "supabase-access-token",
+    "supabase-refresh-token",
+    "supabase-auth-token",
+    // Firebase
+    "firebase-auth-token",
+    "firebase-auth-uid",
+    // AWS Cognito
+    "aws-access-token",
+    "aws-id-token",
+    "aws-refresh-token",
+    "cognito-access-token",
+    "cognito-id-token",
+    "cognito-refresh-token",
+    // Auth0
+    "auth0-access-token",
+    "auth0-id-token",
+    "auth0-refresh-token",
+    // Clerk
+    "__clerk_session",
+    "__clerk_frontend_api",
+    "_clerk_session",
+    // Stripe
+    "stripe-access-token",
+    "stripe-refresh-token",
+    // Generic auth patterns (partial matches via regex)
+    "auth",
+    "session",
+    "token",
+    "bearer",
+    "jwt",
+    "access",
+    "refresh"
+  ];
 
   const DEFAULT_SETTINGS = {
     enabled: true,
@@ -7,7 +102,9 @@
     collapseByDefault: false,
     showJwtPreview: true,
     maskByDefault: false,
-    maxPreviewLength: 20,
+    maxPreviewLength: 50,
+    smartIdEnabled: false,
+    smartIdIncludePartial: false,
     rules: []
   };
 
@@ -61,7 +158,8 @@
       domains,
       source,
       key: String((rule && rule.key) || "").trim(),
-      keyIsRegex: Boolean(rule && rule.keyIsRegex)
+      keyIsRegex: Boolean(rule && rule.keyIsRegex),
+      smartIdEnabled: Boolean(rule && rule.smartIdEnabled)
     };
   }
 
@@ -76,6 +174,8 @@
       showJwtPreview: Boolean(merged.showJwtPreview),
       maskByDefault: Boolean(merged.maskByDefault),
       maxPreviewLength: clampNumber(merged.maxPreviewLength, 16, 240, DEFAULT_SETTINGS.maxPreviewLength),
+      smartIdEnabled: Boolean(merged.smartIdEnabled),
+      smartIdIncludePartial: Boolean(merged.smartIdIncludePartial),
       rules: rules.length ? rules : deepClone(DEFAULT_SETTINGS.rules)
     };
   }
@@ -143,6 +243,51 @@
     }
 
     return key === rule.key;
+  }
+
+  function scanSmartIdKeys(storageLike, source, includePartial) {
+    const matches = [];
+
+    if (!storageLike) {
+      return matches;
+    }
+
+    for (let index = 0; index < storageLike.length; index += 1) {
+      const key = storageLike.key(index);
+      if (!key) {
+        continue;
+      }
+
+      // Check exact match against common auth keys
+      const lowerKey = key.toLowerCase();
+      const exactMatch = COMMON_AUTH_KEYS.some(
+        (authKey) => lowerKey === authKey.toLowerCase()
+      );
+
+      // Check if key contains common auth patterns (only if includePartial is true)
+      let containsMatch = false;
+      if (includePartial) {
+        containsMatch = COMMON_AUTH_KEYS.some((authKey) => {
+          const lowerAuth = authKey.toLowerCase();
+          return (
+            lowerKey.includes(lowerAuth) &&
+            lowerKey.length <= lowerAuth.length + 15
+          );
+        });
+      }
+
+      if (exactMatch || containsMatch) {
+        const value = storageLike.getItem(key);
+        matches.push({
+          matchedKey: key,
+          value: value == null ? "" : value,
+          source: source,
+          isSmartId: true
+        });
+      }
+    }
+
+    return matches;
   }
 
   function safeJsonParse(value) {
@@ -304,9 +449,31 @@
     return normalized;
   }
 
+  async function savePosition(position) {
+    if (!position || typeof position.left !== "number" || typeof position.top !== "number") {
+      return;
+    }
+    await storageSyncSet({ [POSITION_KEY]: { left: Math.round(position.left), top: Math.round(position.top) } });
+  }
+
+  async function loadPosition() {
+    try {
+      const result = await storageSyncGet(POSITION_KEY);
+      const pos = result[POSITION_KEY];
+      if (pos && typeof pos.left === "number" && typeof pos.top === "number") {
+        return pos;
+      }
+    } catch (error) {
+      // Silently fail if position cannot be loaded
+    }
+    return null;
+  }
+
   const sharedApi = {
     STORAGE_KEY,
+    POSITION_KEY,
     DEFAULT_SETTINGS,
+    COMMON_AUTH_KEYS,
     deepClone,
     uid,
     normalizeDomainInput,
@@ -316,6 +483,7 @@
     urlMatchesRuleDomains,
     compileRegex,
     matchKey,
+    scanSmartIdKeys,
     decodeJwt,
     truncateMiddle,
     getBrowserApi,
@@ -327,7 +495,9 @@
     runtimeGetURL,
     addRuntimeMessageListener,
     getSettings,
-    saveSettings
+    saveSettings,
+    savePosition,
+    loadPosition
   };
 
   if (typeof window !== "undefined") {

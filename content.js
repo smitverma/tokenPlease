@@ -185,7 +185,8 @@
     latestEntries: [],
     latestEntriesSignature: "",
     minimized: false,
-    dragStarted: false
+    dragStarted: false,
+    position: null
   };
 
   const dom = {
@@ -199,13 +200,23 @@
     minimizeCircle: null
   };
 
-  function ensureOverlay() {
+  async function ensureOverlay() {
     if (dom.root) {
       return;
     }
 
+    if (!state.position) {
+      state.position = await shared.loadPosition();
+    }
+
     const root = document.createElement("div");
     root.id = "tokenplease-root";
+    if (state.position) {
+      root.style.left = state.position.left + "px";
+      root.style.top = state.position.top + "px";
+      root.style.right = "auto";
+      root.style.bottom = "auto";
+    }
     const shadowRoot = root.attachShadow({ mode: "open" });
 
     const style = document.createElement("style");
@@ -328,6 +339,12 @@
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
 
+        if (state.dragStarted) {
+          const rect = root.getBoundingClientRect();
+          state.position = { left: rect.left, top: rect.top };
+          shared.savePosition(state.position);
+        }
+
         if (!state.dragStarted) {
           toggleMinimize();
         }
@@ -374,6 +391,8 @@
       circle.style.justifyContent = "center";
       circle.style.zIndex = "2147483647";
       circle.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.3)";
+      circle.style.transition = "transform 120ms ease, border-color 120ms ease";
+      circle.style.transform = "scale(1)";
 
       const img = document.createElement("img");
       img.src = shared.runtimeGetURL("cookies.png");
@@ -382,6 +401,14 @@
       img.style.height = "40px";
       img.style.objectFit = "contain";
       circle.appendChild(img);
+      circle.addEventListener("mouseenter", () => {
+        circle.style.transform = "scale(1.1)";
+        circle.style.borderColor = "#6b7280";
+      });
+      circle.addEventListener("mouseleave", () => {
+        circle.style.transform = "scale(1)";
+        circle.style.borderColor = "#374151";
+      });
       circle.addEventListener("click", () => {
         toggleMinimize();
       });
@@ -650,6 +677,61 @@
       }
     }
 
+    // Smart ID: Global scan for common auth keys
+    if (settings.smartIdEnabled) {
+      const smartIdLocal = shared.scanSmartIdKeys(window.localStorage, "localStorage", settings.smartIdIncludePartial);
+      smartIdLocal.forEach((item) => {
+        entries.push({
+          ...item,
+          rule: {
+            id: "smart-id-global",
+            name: "Smart ID",
+            source: item.source,
+            enabled: true,
+            domains: [],
+            key: item.matchedKey,
+            keyIsRegex: false,
+            smartIdEnabled: true
+          }
+        });
+      });
+
+      const smartIdSession = shared.scanSmartIdKeys(window.sessionStorage, "sessionStorage", settings.smartIdIncludePartial);
+      smartIdSession.forEach((item) => {
+        entries.push({
+          ...item,
+          rule: {
+            id: "smart-id-global",
+            name: "Smart ID",
+            source: item.source,
+            enabled: true,
+            domains: [],
+            key: item.matchedKey,
+            keyIsRegex: false,
+            smartIdEnabled: true
+          }
+        });
+      });
+    }
+
+    // Smart ID: Per-rule scan for rules with smartIdEnabled
+    for (const rule of activeRules) {
+      if (rule.smartIdEnabled) {
+        if (rule.source === "localStorage") {
+          const smartIdValues = shared.scanSmartIdKeys(window.localStorage, "localStorage", settings.smartIdIncludePartial);
+          smartIdValues.forEach((item) => {
+            entries.push({ ...item, rule: { ...rule, name: `${rule.name} (Smart ID)` } });
+          });
+        }
+        if (rule.source === "sessionStorage") {
+          const smartIdValues = shared.scanSmartIdKeys(window.sessionStorage, "sessionStorage", settings.smartIdIncludePartial);
+          smartIdValues.forEach((item) => {
+            entries.push({ ...item, rule: { ...rule, name: `${rule.name} (Smart ID)` } });
+          });
+        }
+      }
+    }
+
     entries.sort((left, right) => {
       const nameComp = String(left.rule.name).localeCompare(String(right.rule.name));
       if (nameComp !== 0) {
@@ -715,7 +797,7 @@
     state.settings = await shared.getSettings();
     state.latestEntries = [];
     state.latestEntriesSignature = "";
-    ensureOverlay();
+    await ensureOverlay();
     applyCollapsePreference();
     dom.pauseBtn.textContent = state.paused ? "Resume" : "Pause";
     resetPolling();

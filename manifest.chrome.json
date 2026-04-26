@@ -28,6 +28,16 @@
       "run_at": "document_idle"
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "cookies.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true

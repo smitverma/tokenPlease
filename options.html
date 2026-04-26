@@ -53,6 +53,14 @@
               <input class="behavior-checkbox" id="show-jwt" type="checkbox" />
             </label>
             <label class="field">
+              <span class="behavior-field-label">Smart ID (auto-scan common auth keys)</span>
+              <input class="behavior-checkbox" id="smart-id-enabled" type="checkbox" />
+            </label>
+            <label class="field indent">
+              <span class="behavior-field-label behavior-field-sublabel">Include partial matches (may produce more results)</span>
+              <input class="behavior-checkbox" id="smart-id-partial" type="checkbox" />
+            </label>
+            <label class="field">
               <span class="behavior-field-label">Preview max length</span>
               <div class="number-input-group">
                 <button type="button" class="number-btn minus-btn" data-target="max-preview" aria-label="Decrease"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
@@ -65,7 +73,7 @@
 
         <section id="panel-data" class="panel">
           <h1>Import / Export</h1>
-          <textarea id="data-box" rows="16" spellcheck="false"></textarea>
+          <textarea id="data-box" class="panel-data-box" rows="16" spellcheck="false"></textarea>
           <div class="actions-row">
             <button id="export-btn" class="data-export-btn" type="button">Export JSON</button>
             <button id="import-btn" class="data-import-btn" type="button">Import JSON</button>
@@ -111,6 +119,11 @@
         <label class="field">
           <span class="field-label">Regex mode</span>
           <input id="rule-key-regex" type="checkbox" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Smart ID</span>
+          <input id="rule-smart-id" type="checkbox" />
         </label>
 
         <div class="actions-row">

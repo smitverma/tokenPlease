@@ -156,6 +156,7 @@ input[type="number"] {
 }
 
 .rules-list {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -175,7 +176,7 @@ input[type="number"] {
 }
 
 .rule-row {
-    border: 1px solid #1f2937;
+    border: 1px solid #3d4b5e;
     border-radius: 8px;
     background: #111827;
     padding: 10px;
@@ -224,6 +225,10 @@ input[type="number"] {
     font-weight: bold;
 }
 
+.behavior-field-sublabel {
+    padding-left: 20px;
+}
+
 .number-input-group {
     display: flex;
     align-items: center;
@@ -262,6 +267,10 @@ input[type="number"] {
 .number-btn svg {
     width: 16px;
     height: 16px;
+}
+
+.panel-data-box {
+    margin-top: 10px;
 }
 
 .data-export-btn,
@@ -310,7 +319,7 @@ input[type="number"] {
 }
 
 .actions-row {
-    margin-top: 12px;
+    margin-top: 20px;
     display: flex;
     gap: 10px;
     justify-content: flex-end;
