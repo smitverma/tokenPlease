@@ -2,6 +2,8 @@
 
 A browser extension that adds a permanent overlay on matched pages and displays values from `localStorage`, `sessionStorage`, or `cookies` with one-click copy.
 
+![alt text](screenshots/screenshot1.png)
+
 ## Features
 
 - Configurable multi-rule engine (domain + source + key)
