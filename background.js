@@ -47,6 +47,14 @@
         .catch((error) => ({ ok: false, error: error && error.message ? error.message : "Cookie read failed" }));
     }
 
+    if (message.type === "tokenPlease:getAllCookies") {
+      const url = String(message.url || "");
+
+      return shared.cookiesGetAll({ url })
+        .then((cookies) => ({ ok: true, cookies }))
+        .catch((error) => ({ ok: false, error: error && error.message ? error.message : "Cookie read failed" }));
+    }
+
     if (message.type === "tokenPlease:getSettings") {
       return shared
         .getSettings()

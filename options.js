@@ -11,7 +11,8 @@
     panels: {
       rules: document.getElementById("panel-rules"),
       behavior: document.getElementById("panel-behavior"),
-      data: document.getElementById("panel-data")
+      data: document.getElementById("panel-data"),
+      about: document.getElementById("panel-about")
     },
     rulesList: document.getElementById("rules-list"),
     addRuleBtn: document.getElementById("add-rule-btn"),
@@ -303,7 +304,6 @@
     elements.ruleForm.addEventListener("submit", onRuleSave);
     elements.cancelRuleBtn.addEventListener("click", () => elements.dialog.close());
 
-    // Custom number input buttons
     document.querySelectorAll(".number-btn").forEach((button) => {
       button.addEventListener("click", (e) => {
         e.preventDefault();
@@ -323,7 +323,6 @@
           newValue = current - step;
         }
 
-        // Constrain to min/max
         if (!isNaN(min) && newValue < min) newValue = min;
         if (!isNaN(max) && newValue > max) newValue = max;
 

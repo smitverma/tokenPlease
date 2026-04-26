@@ -13,6 +13,7 @@
         <button class="menu-btn active sidebar-menu-btn-rules" data-target="rules">Rules</button>
         <button class="menu-btn sidebar-menu-btn-behavior" data-target="behavior">Behavior</button>
         <button class="menu-btn sidebar-menu-btn-data" data-target="data">Import / Export</button>
+        <button class="menu-btn sidebar-menu-btn-about" data-target="about">About</button>
         <div class="author footer-author">by <a class="footer-author-link" href="https://smitverma.com" target="_blank"><b>Smit</b></a></div>
       </aside>
 
@@ -53,7 +54,7 @@
               <input class="behavior-checkbox" id="show-jwt" type="checkbox" />
             </label>
             <label class="field">
-              <span class="behavior-field-label">Smart ID (auto-scan common auth keys)</span>
+              <span class="behavior-field-label">Smart ID</span>
               <input class="behavior-checkbox" id="smart-id-enabled" type="checkbox" />
             </label>
             <label class="field indent">
@@ -77,6 +78,151 @@
           <div class="actions-row">
             <button id="export-btn" class="data-export-btn" type="button">Export JSON</button>
             <button id="import-btn" class="data-import-btn" type="button">Import JSON</button>
+          </div>
+        </section>
+
+        <section id="panel-about" class="panel">
+          <h1>About</h1>
+          <div class="about-content">
+            <div class="about-header">
+              <img class="about-logo" src="cookies.png" alt="tokenPlease">
+              <div>
+                <h2 class="about-title">tokenPlease</h2>
+                <p class="about-subtitle">by <a class="about-author-link" href="https://smitverma.com">Smit Verma</a></p>
+              </div>
+            </div>
+
+            <p class="about-description">
+              tokenPlease is a browser extension that displays values from <code>localStorage</code>, <code>sessionStorage</code>, and <code>cookies</code> on matched pages — with one-click copy functionality. Perfect for debugging authentication tokens, session IDs, and API keys during development.
+            </p>
+
+            <div class="about-section">
+              <h3>Features</h3>
+              <div class="feature-grid">
+                <div class="feature-card">
+                  <div class="feature-icon">📦</div>
+                  <div class="feature-text">
+                    <strong>Multi-Source Support</strong>
+                    <span>Read localStorage, sessionStorage, and cookies (including HttpOnly)</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🌐</div>
+                  <div class="feature-text">
+                    <strong>Flexible Domain Matching</strong>
+                    <span>Match by hostname, full URL, wildcard (*.example.com), or suffix patterns</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🔍</div>
+                  <div class="feature-text">
+                    <strong>Regex Key Matching</strong>
+                    <span>Use advanced regex patterns to match multiple keys at once, powering workflows</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🔄</div>
+                  <div class="feature-text">
+                    <strong>SPA-Safe Polling</strong>
+                    <span>Automatic refresh with configurable interval, safe for single-page applications</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🎭</div>
+                  <div class="feature-text">
+                    <strong>JWT Decode</strong>
+                    <span>One-click decode of JWT tokens with formatted payload preview, for ease of use</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🛡️</div>
+                  <div class="feature-text">
+                    <strong>Smart ID</strong>
+                    <span>Automatically detect common auth keys like accessToken, PHPSESSID, next-auth tokens, and more</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">📋</div>
+                  <div class="feature-text">
+                    <strong>One-Click Copy</strong>
+                    <span>Copy any token value to clipboard with a single click, decreasing testing friction</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <div class="feature-icon">🎨</div>
+                  <div class="feature-text">
+                    <strong>Collapsible Overlay</strong>
+                    <span>Non-intrusive floating UI that can be moved anywhere and minimized to a small circle</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-section">
+              <h3>How to Use</h3>
+
+              <div class="how-to-item">
+                <h4>1. Add a Rule</h4>
+                <p>Go to the <strong>Rules</strong> tab and click <em>Add Rule</em>. Configure:</p>
+                <ul>
+                  <li><strong>Name</strong> — A label for display in the overlay</li>
+                  <li><strong>Source</strong> — Choose localStorage, sessionStorage, or cookie</li>
+                  <li><strong>Domains</strong> — Enter domains to match (one per line)</li>
+                  <li><strong>Key</strong> — The storage key or cookie name to monitor</li>
+                </ul>
+              </div>
+
+              <div class="how-to-item">
+                <h4>2. View Tokens</h4>
+                <p>Visit any page matching your rule domains. The overlay appears at the top-right corner showing your configured tokens with:</p>
+                <ul>
+                  <li><strong>Copy</strong> — Copy the raw value instantly</li>
+                  <li><strong>Mask/Reveal</strong> — Toggle between masked and visible values</li>
+                  <li><strong>JWT Decode</strong> — Decode and preview JWT payloads</li>
+                </ul>
+              </div>
+
+              <div class="how-to-item">
+                <h4>3. Smart ID (Optional)</h4>
+                <p>Enable <strong>Smart ID</strong> in the Behavior tab to automatically scan for common authentication keys. This feature:</p>
+                <ul>
+                  <li>Scans localStorage and sessionStorage for known auth key patterns</li>
+                  <li>Works globally or per-rule when enabled in rule settings</li>
+                  <li>Includes an option to include partial matches for broader detection</li>
+                </ul>
+              </div>
+
+              <div class="how-to-item">
+                <h4>4. Import / Export</h4>
+                <p>Backup and share your configuration using the <strong>Import / Export</strong> tab. Export your rules and settings as JSON, then import them on another browser or device.</p>
+              </div>
+            </div>
+
+            <div class="about-section">
+              <h3>Overlay Controls</h3>
+              <div class="controls-grid">
+                <div class="control-item">
+                  <kbd>Pause</kbd>
+                  <span>Stop auto-refresh temporarily</span>
+                </div>
+                <div class="control-item">
+                  <kbd>Refresh</kbd>
+                  <span>Manually refresh token values</span>
+                </div>
+                <div class="control-item">
+                  <kbd>≡</kbd>
+                  <span>Drag to reposition the overlay, click to collapse</span>
+                </div>
+                <div class="control-item">
+                  <kbd>Cdookie circle</kbd>
+                  <span>Click to restore minimized overlay</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-footer">
+              <p>Found a bug or have a feature request? <a href="https://github.com/smitverma/tokenPlease" target="_blank">Open an issue on GitHub</a></p>
+            </div>
           </div>
         </section>
       </main>

@@ -660,6 +660,15 @@
     const cookieRules = activeRules.filter((rule) => rule.source === "cookie");
     const cookieValuesByRuleId = await fetchCookieMatches(cookieRules);
 
+    // Fetch all cookies once for Smart ID scanning if enabled
+    let allCookies = null;
+    if (settings.smartIdEnabled) {
+      const cookieResponse = await shared.sendMessageToGetAllCookies(location.href);
+      if (cookieResponse && cookieResponse.ok && Array.isArray(cookieResponse.cookies)) {
+        allCookies = cookieResponse.cookies;
+      }
+    }
+
     for (const rule of activeRules) {
       if (rule.source === "localStorage") {
         const values = fetchStorageMatches(rule, window.localStorage);
@@ -677,7 +686,6 @@
       }
     }
 
-    // Smart ID: Global scan for common auth keys
     if (settings.smartIdEnabled) {
       const smartIdLocal = shared.scanSmartIdKeys(window.localStorage, "localStorage", settings.smartIdIncludePartial);
       smartIdLocal.forEach((item) => {
@@ -712,9 +720,27 @@
           }
         });
       });
+
+      if (allCookies) {
+        const smartIdCookies = shared.scanSmartIdCookies(allCookies, settings.smartIdIncludePartial);
+        smartIdCookies.forEach((item) => {
+          entries.push({
+            ...item,
+            rule: {
+              id: "smart-id-global",
+              name: "Smart ID",
+              source: "cookie",
+              enabled: true,
+              domains: [],
+              key: item.matchedKey,
+              keyIsRegex: false,
+              smartIdEnabled: true
+            }
+          });
+        });
+      }
     }
 
-    // Smart ID: Per-rule scan for rules with smartIdEnabled
     for (const rule of activeRules) {
       if (rule.smartIdEnabled) {
         if (rule.source === "localStorage") {
@@ -725,6 +751,12 @@
         }
         if (rule.source === "sessionStorage") {
           const smartIdValues = shared.scanSmartIdKeys(window.sessionStorage, "sessionStorage", settings.smartIdIncludePartial);
+          smartIdValues.forEach((item) => {
+            entries.push({ ...item, rule: { ...rule, name: `${rule.name} (Smart ID)` } });
+          });
+        }
+        if (rule.source === "cookie" && allCookies) {
+          const smartIdValues = shared.scanSmartIdCookies(allCookies, settings.smartIdIncludePartial);
           smartIdValues.forEach((item) => {
             entries.push({ ...item, rule: { ...rule, name: `${rule.name} (Smart ID)` } });
           });

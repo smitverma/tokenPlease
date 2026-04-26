@@ -39,7 +39,6 @@
     "api_secret",
     // Session / Auth Cookies
     "PHPSESSID",
-    "PHPSESSID",
     "session_id",
     "sessionid",
     "session",
@@ -258,13 +257,11 @@
         continue;
       }
 
-      // Check exact match against common auth keys
       const lowerKey = key.toLowerCase();
       const exactMatch = COMMON_AUTH_KEYS.some(
         (authKey) => lowerKey === authKey.toLowerCase()
       );
 
-      // Check if key contains common auth patterns (only if includePartial is true)
       let containsMatch = false;
       if (includePartial) {
         containsMatch = COMMON_AUTH_KEYS.some((authKey) => {
@@ -282,6 +279,47 @@
           matchedKey: key,
           value: value == null ? "" : value,
           source: source,
+          isSmartId: true
+        });
+      }
+    }
+
+    return matches;
+  }
+
+  function scanSmartIdCookies(cookies, includePartial) {
+    const matches = [];
+
+    if (!Array.isArray(cookies)) {
+      return matches;
+    }
+
+    for (const cookie of cookies) {
+      if (!cookie || !cookie.name) {
+        continue;
+      }
+
+      const lowerKey = cookie.name.toLowerCase();
+      const exactMatch = COMMON_AUTH_KEYS.some(
+        (authKey) => lowerKey === authKey.toLowerCase()
+      );
+
+      let containsMatch = false;
+      if (includePartial) {
+        containsMatch = COMMON_AUTH_KEYS.some((authKey) => {
+          const lowerAuth = authKey.toLowerCase();
+          return (
+            lowerKey.includes(lowerAuth) &&
+            lowerKey.length <= lowerAuth.length + 15
+          );
+        });
+      }
+
+      if (exactMatch || containsMatch) {
+        matches.push({
+          matchedKey: cookie.name,
+          value: cookie.value || "",
+          source: "cookie",
           isSmartId: true
         });
       }
@@ -407,6 +445,13 @@
     return callbackToPromise((done) => api.cookies.getAll(details, done));
   }
 
+  async function sendMessageToGetAllCookies(url) {
+    return runtimeSendMessage({
+      type: "tokenPlease:getAllCookies",
+      url: url
+    });
+  }
+
   function runtimeGetURL(path) {
     return getBrowserApi().runtime.getURL(path);
   }
@@ -464,7 +509,7 @@
         return pos;
       }
     } catch (error) {
-      // Silently fail if position cannot be loaded
+      console.warn("Failed to load position from storage:", error);
     }
     return null;
   }
@@ -484,6 +529,7 @@
     compileRegex,
     matchKey,
     scanSmartIdKeys,
+    scanSmartIdCookies,
     decodeJwt,
     truncateMiddle,
     getBrowserApi,
@@ -492,6 +538,7 @@
     runtimeSendMessage,
     runtimeOpenOptionsPage,
     cookiesGetAll,
+    sendMessageToGetAllCookies,
     runtimeGetURL,
     addRuntimeMessageListener,
     getSettings,
