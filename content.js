@@ -183,7 +183,7 @@
     revealMap: new Map(),
     jwtVisibleMap: new Map(),
     latestEntries: [],
-    latestEntriesSignature: "",
+    latestEntriesSignature: null,
     minimized: false,
     dragStarted: false,
     position: null
@@ -487,7 +487,7 @@
     if (!entries.length) {
       renderEmpty("No matching values found for this page.");
       return;
-    }
+    }    
 
     dom.body.innerHTML = "";
 
@@ -802,7 +802,7 @@
     const entries = await collectEntries(state.settings);
     const signature = buildEntriesSignature(entries);
 
-    if (signature === state.latestEntriesSignature) {
+    if (state.latestEntriesSignature !== null && signature === state.latestEntriesSignature) {
       return;
     }
 
@@ -829,7 +829,7 @@
   async function loadSettings() {
     state.settings = await shared.getSettings();
     state.latestEntries = [];
-    state.latestEntriesSignature = "";
+    state.latestEntriesSignature = null;
     await ensureOverlay();
     applyCollapsePreference();
     dom.pauseBtn.textContent = state.paused ? "Resume" : "Pause";
