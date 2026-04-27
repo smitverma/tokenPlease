@@ -367,8 +367,10 @@
     state.minimized = !state.minimized;
     if (state.minimized) {
       minimize();
+      shared.storageSessionSet({ "tokenPlease.minimized": true });
     } else {
       restore();
+      shared.storageSessionSet({ "tokenPlease.minimized": false });
     }
   }
 
@@ -831,6 +833,18 @@
     state.latestEntries = [];
     state.latestEntriesSignature = null;
     await ensureOverlay();
+
+    // Restore minimized state from session storage
+    try {
+      const result = await shared.storageSessionGet("tokenPlease.minimized");
+      if (result && result["tokenPlease.minimized"] === true) {
+        state.minimized = true;
+        minimize();
+      }
+    } catch (e) {
+      // Ignore errors loading minimized state
+    }
+
     applyCollapsePreference();
     dom.pauseBtn.textContent = state.paused ? "Resume" : "Pause";
     resetPolling();

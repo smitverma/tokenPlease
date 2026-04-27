@@ -514,6 +514,22 @@
     return null;
   }
 
+  async function storageSessionSet(value) {
+    const api = getBrowserApi();
+    if (usingBrowserNamespace()) {
+      return api.storage.session.set(value);
+    }
+    return callbackToPromise((done) => api.storage.session.set(value, done));
+  }
+
+  async function storageSessionGet(key) {
+    const api = getBrowserApi();
+    if (usingBrowserNamespace()) {
+      return api.storage.session.get(key);
+    }
+    return callbackToPromise((done) => api.storage.session.get(key, done));
+  }
+
   const sharedApi = {
     STORAGE_KEY,
     POSITION_KEY,
@@ -535,6 +551,8 @@
     getBrowserApi,
     storageSyncGet,
     storageSyncSet,
+    storageSessionSet,
+    storageSessionGet,
     runtimeSendMessage,
     runtimeOpenOptionsPage,
     cookiesGetAll,
